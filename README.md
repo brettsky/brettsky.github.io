@@ -1,1 +1,0 @@
-# brettsky.github.io
