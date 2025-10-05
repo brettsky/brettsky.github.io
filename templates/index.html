@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block body %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+       
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+    </head>
+    <body>
+        <h1>Welcome to Brett's Portfolio</h1>
+    </body>
+
+    <main>
+        <h2>About Me</h2>
+        <p>I am a network security engineer. I have a passion for cybersecurity and I am always looking for new challenges.</p>
+    </main>
+    <footer>
+        <p>Copyright @2025 Brett's Portfolio</p>
+    </footer>
+</html>
+
+
+{% endblock %}
