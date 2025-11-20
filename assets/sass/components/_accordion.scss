@@ -1,0 +1,44 @@
+.accordion-header {
+    cursor: pointer;
+    padding: 1rem;
+    background-color: _palette(border-bg);
+    border-radius: _size(border-radius);
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+        background-color: _palette(border-bg-alt);
+        color: _palette(accent);
+    }
+    
+    h4 {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    .toggle-icon {
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+    
+    &.active {
+        .toggle-icon {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.accordion-content {
+    display: none;
+    padding: 0 1rem 1rem 1rem;
+    border-left: 2px solid _palette(border-bg-alt);
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    
+    ul {
+        margin-bottom: 0;
+    }
+}

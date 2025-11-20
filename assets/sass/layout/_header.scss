@@ -29,13 +29,7 @@
 
 			&:before {
 				content: '';
-				display: block;
-				position: absolute;
-				top: calc(-3.5rem - 1px);
-				left: calc(50% - #{_size(border-width) * 1});
-				width: _size(border-width);
-				height: calc(3.5rem + 1px);
-				background: _palette(border);
+				display: none; // Removed the vertical connecting line
 			}
 		}
 
@@ -53,6 +47,7 @@
 			line-height: 5.5rem;
 			border: solid _size(border-width) _palette(border);
 			border-radius: 100%;
+			display: none; // Remove the logo circle completely
 
 			.icon {
 				&:before {

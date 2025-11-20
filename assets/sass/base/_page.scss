@@ -31,6 +31,13 @@
 	body {
 		background: _palette(bg);
 
+		// Hide scrollbar
+		&::-webkit-scrollbar {
+			display: none;
+		}
+		-ms-overflow-style: none;  /* IE and Edge */
+		scrollbar-width: none;  /* Firefox */
+
 		// Stops initial animations until page loads.
 			&.is-preload {
 				*, *:before, *:after {

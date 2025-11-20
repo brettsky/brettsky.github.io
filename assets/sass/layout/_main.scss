@@ -36,6 +36,21 @@
 				opacity: 1;
 			}
 
+			// Compact Profile Section
+			&#intro {
+				.image.main {
+					@include breakpoint('>small') {
+						float: left;
+						width: 40%;
+						margin: 0 2rem 0 0;
+						
+						img {
+							width: 100%;
+						}
+					}
+				}
+			}
+
 			.close {
 				display: block;
 				position: absolute;

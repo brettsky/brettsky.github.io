@@ -397,5 +397,11 @@
 					$window.on('load', function() {
 						$main._show(location.hash.substr(1), true);
 					});
+					
+			// Accordion functionality
+			$('.accordion-header').click(function() {
+				$(this).toggleClass('active');
+				$(this).next('.accordion-content').slideToggle(200);
+			});
 
 })(jQuery);

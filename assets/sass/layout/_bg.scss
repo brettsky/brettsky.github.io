@@ -66,3 +66,40 @@
 			}
 		}
 	}
+
+	#bg-canvas {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0; // Behind everything
+		opacity: 0.4; // Subtle
+		pointer-events: none;
+	}
+
+	// Scanline Overlay
+	.scanlines {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			to bottom,
+			rgba(255, 255, 255, 0),
+			rgba(255, 255, 255, 0) 50%,
+			rgba(0, 0, 0, 0.1) 50%,
+			rgba(0, 0, 0, 0.1)
+		);
+		background-size: 100% 4px; // Size of scanlines
+		z-index: 2; // Above bg, below content
+		pointer-events: none;
+		animation: scanlineMove 60s linear infinite; // Slow movement
+		opacity: 0.3;
+	}
+
+	@keyframes scanlineMove {
+		0% { background-position: 0 0; }
+		100% { background-position: 0 100%; }
+	}
