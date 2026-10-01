@@ -11,6 +11,83 @@
 	<noscript>
 		<link rel="stylesheet" href="assets/css/noscript.css" />
 	</noscript>
+	<style>
+		/* Writeups section cards */
+		.writeup-list { list-style: none; margin: 0; padding: 0; }
+		.writeup-list li { margin: 0 0 1.25rem 0; }
+		.writeup-card {
+			display: block;
+			padding: 1.25rem 1.5rem;
+			border: 1px solid rgba(0, 255, 65, 0.2);
+			border-left: 3px solid #00ff41;
+			border-radius: 5px;
+			background: rgba(255, 255, 255, 0.04);
+			text-decoration: none;
+			transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+		}
+		.writeup-card:hover {
+			background: rgba(0, 255, 65, 0.07);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+		}
+		.writeup-card-head {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 0.75rem;
+			margin-bottom: 0.65rem;
+		}
+		.writeup-card-title {
+			font-size: 1.1rem;
+			font-weight: 700;
+			color: #ffffff;
+			text-transform: uppercase;
+			letter-spacing: 0.05rem;
+		}
+		.writeup-card-platform {
+			font-size: 0.6rem;
+			letter-spacing: 0.15rem;
+			text-transform: uppercase;
+			color: #00ff41;
+			white-space: nowrap;
+		}
+		.writeup-card-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.4rem;
+			margin-bottom: 0.75rem;
+		}
+		.writeup-card .tag {
+			font-size: 0.6rem;
+			letter-spacing: 0.08rem;
+			text-transform: uppercase;
+			color: rgba(255, 255, 255, 0.7);
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			border-radius: 3px;
+			padding: 0.2rem 0.5rem;
+		}
+		.writeup-card .tag.tag-medium {
+			color: #ffb070;
+			border-color: rgba(255, 176, 112, 0.4);
+		}
+		.writeup-card-desc {
+			display: block;
+			font-size: 0.85rem;
+			line-height: 1.6;
+			color: rgba(255, 255, 255, 0.7);
+			margin-bottom: 0.85rem;
+		}
+		.writeup-card-cta {
+			display: inline-block;
+			font-size: 0.75rem;
+			letter-spacing: 0.1rem;
+			text-transform: uppercase;
+			color: #00ff41;
+		}
+		.writeup-card-cta .icon { margin-left: 0.35rem; transition: transform 0.2s ease; }
+		.writeup-card:hover .writeup-card-cta .icon { transform: translateX(4px); }
+	</style>
 </head>
 
 <body class="is-preload">
@@ -41,6 +118,7 @@
 					<li><a href="#intro">Profile</a></li>
 					<li><a href="#work">Experience</a></li>
 					<li><a href="#about">Education</a></li>
+					<li><a href="#writeups">Writeups</a></li>
 					<li><a href="#hobbies">Hobbies</a></li>
 				</ul>
 			</nav>
@@ -227,6 +305,36 @@
 			</article>
 
 			
+
+			<!-- Writeups -->
+			<article id="writeups">
+				<h2 class="major">Writeups</h2>
+				<p>I document the boxes and CTF challenges I work through &mdash; the methodology, the tooling, and the
+					lessons learned along the way. A few are below; more live in my <a
+						href="https://github.com/brettsky/CTF-challs">CTF repository</a>.</p>
+				<ul class="writeup-list">
+					<li>
+						<a class="writeup-card" href="writeups/cronos.html">
+							<span class="writeup-card-head">
+								<span class="writeup-card-title">Cronos</span>
+								<span class="writeup-card-platform">Hack The Box</span>
+							</span>
+							<span class="writeup-card-tags">
+								<span class="tag">Linux</span>
+								<span class="tag tag-medium">Medium</span>
+								<span class="tag">SQLi</span>
+								<span class="tag">Cmd Injection</span>
+								<span class="tag">Cron</span>
+							</span>
+							<span class="writeup-card-desc">vhost enumeration to a hidden admin panel, a SQL injection auth
+								bypass, OS command injection for a foothold, and a root-owned Laravel cron job for
+								privilege escalation.</span>
+							<span class="writeup-card-cta">Read writeup <span
+									class="icon solid fa-arrow-right"></span></span>
+						</a>
+					</li>
+				</ul>
+			</article>
 
 			<!-- Hobbies -->
 			<article id="hobbies">

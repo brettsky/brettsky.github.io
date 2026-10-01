@@ -1,0 +1,306 @@
+/*
+	Writeup page styles — Neo-Tokyo / Matrix theme
+	Long-form layout for CTF / HTB writeups. Loaded after main.css,
+	which provides the base reset, typography, colours and Font Awesome.
+*/
+
+/* Let the page scroll normally (main.css locks the SPA to the viewport). */
+html,
+body.writeup-page {
+	height: auto;
+	min-height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+body.writeup-page {
+	background-color: #0a0d0a;
+	color: rgba(255, 255, 255, 0.85);
+	font-family: "JetBrains Mono", "Courier New", monospace;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Content sits above #bg (z 0–2) and the scanline overlay. */
+.writeup-shell {
+	position: relative;
+	z-index: 3;
+	max-width: 54rem;
+	margin: 0 auto;
+	padding: 2rem 1.5rem 4rem 1.5rem;
+}
+
+/* Top bar: back link + site name */
+.writeup-topbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 2.5rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1rem;
+}
+
+.writeup-topbar a {
+	color: rgba(255, 255, 255, 0.7);
+	text-decoration: none;
+	border-bottom: none;
+	transition: color 0.2s ease;
+}
+
+.writeup-topbar a:hover {
+	color: #00ff41;
+}
+
+.writeup-topbar .back-link .icon {
+	margin-right: 0.5rem;
+}
+
+.writeup-topbar .site-name {
+	font-weight: 700;
+	color: #ffffff;
+}
+
+/* Article panel */
+#writeup {
+	background: rgba(14, 17, 20, 0.92);
+	border: 1px solid rgba(0, 255, 65, 0.18);
+	border-radius: 6px;
+	box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(0, 255, 65, 0.02);
+	padding: 2.5rem;
+}
+
+/* Header block */
+.writeup-head {
+	margin-bottom: 2.5rem;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.writeup-head .platform-tag {
+	display: inline-block;
+	font-size: 0.7rem;
+	letter-spacing: 0.2rem;
+	text-transform: uppercase;
+	color: #00ff41;
+	border: 1px solid rgba(0, 255, 65, 0.4);
+	border-radius: 3px;
+	padding: 0.25rem 0.75rem;
+	margin-bottom: 1.25rem;
+}
+
+.writeup-head h1 {
+	font-size: 2.75rem;
+	line-height: 1.1;
+	margin: 0 0 0.75rem 0;
+	color: #ffffff;
+	text-shadow: 0 0 18px rgba(0, 255, 65, 0.35);
+}
+
+.writeup-head .subtitle {
+	margin: 0 0 1.75rem 0;
+	color: rgba(255, 255, 255, 0.6);
+	font-size: 0.95rem;
+	line-height: 1.6;
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+/* Box metadata chips */
+.box-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.box-meta li {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	padding: 0.5rem 0.9rem;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 4px;
+	min-width: 5rem;
+}
+
+.box-meta li span {
+	font-size: 0.6rem;
+	letter-spacing: 0.15rem;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.45);
+}
+
+.box-meta li strong {
+	font-size: 0.85rem;
+	color: #ffffff;
+	font-weight: 700;
+}
+
+.box-meta li.status strong {
+	color: #00ff41;
+}
+
+.box-meta li.diff-medium strong {
+	color: #ffb070;
+}
+
+/* Section headings */
+#writeup h2 {
+	font-size: 1.25rem;
+	margin: 2.75rem 0 1.25rem 0;
+	padding-left: 0.85rem;
+	border-left: 3px solid #00ff41;
+	color: #ffffff;
+}
+
+#writeup h2:first-of-type {
+	margin-top: 0;
+}
+
+#writeup h3 {
+	font-size: 1rem;
+	margin: 2rem 0 1rem 0;
+	color: #33ff67;
+}
+
+#writeup h4 {
+	font-size: 0.85rem;
+	margin: 1.5rem 0 0.75rem 0;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+#writeup p {
+	line-height: 1.75;
+	margin: 0 0 1.5rem 0;
+}
+
+#writeup ul,
+#writeup ol {
+	line-height: 1.75;
+	margin: 0 0 1.5rem 0;
+	padding-left: 1.5rem;
+}
+
+#writeup li {
+	margin-bottom: 0.5rem;
+}
+
+#writeup a {
+	color: #00ff41;
+	text-decoration: none;
+	border-bottom: 1px dotted rgba(0, 255, 65, 0.5);
+}
+
+#writeup a:hover {
+	color: #33ff67;
+	border-bottom-color: #33ff67;
+}
+
+/* Inline code */
+#writeup p code,
+#writeup li code {
+	background: rgba(0, 255, 65, 0.1);
+	color: #7cffa0;
+	border-radius: 3px;
+	font-size: 0.85rem;
+	padding: 0.15rem 0.45rem;
+	margin: 0 0.1rem;
+	word-break: break-word;
+}
+
+/* Code / terminal blocks */
+#writeup pre {
+	margin: 0 0 1.75rem 0;
+	background: #080b08;
+	border: 1px solid rgba(0, 255, 65, 0.22);
+	border-left: 3px solid #00ff41;
+	border-radius: 5px;
+	box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+	overflow: hidden;
+}
+
+#writeup pre code {
+	display: block;
+	margin: 0;
+	padding: 1.1rem 1.4rem;
+	line-height: 1.7;
+	font-size: 0.82rem;
+	color: #c8facc;
+	background: transparent;
+	overflow-x: auto;
+	white-space: pre;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* Figures / screenshots */
+#writeup figure {
+	margin: 0 0 1.75rem 0;
+	text-align: center;
+}
+
+#writeup figure img {
+	max-width: 100%;
+	height: auto;
+	border: 1px solid rgba(0, 255, 65, 0.25);
+	border-radius: 5px;
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+#writeup figure figcaption {
+	margin-top: 0.65rem;
+	font-size: 0.72rem;
+	color: rgba(255, 255, 255, 0.45);
+	text-transform: uppercase;
+	letter-spacing: 0.08rem;
+}
+
+/* Redacted flag marker */
+#writeup .redacted {
+	color: #ff5a4a;
+	background: rgba(255, 90, 74, 0.12);
+	border: 1px solid rgba(255, 90, 74, 0.4);
+	border-radius: 3px;
+	padding: 0.1rem 0.5rem;
+	font-size: 0.85rem;
+	letter-spacing: 0.05rem;
+}
+
+#writeup hr {
+	border: 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	margin: 2.5rem 0;
+}
+
+/* Footer */
+.writeup-foot {
+	margin-top: 2.5rem;
+	text-align: center;
+	font-size: 0.75rem;
+	color: rgba(255, 255, 255, 0.4);
+	letter-spacing: 0.05rem;
+}
+
+/* Responsive */
+@media screen and (max-width: 736px) {
+	.writeup-shell {
+		padding: 1.5rem 1rem 3rem 1rem;
+	}
+
+	#writeup {
+		padding: 1.5rem 1.25rem;
+	}
+
+	.writeup-head h1 {
+		font-size: 2rem;
+	}
+
+	#writeup pre code {
+		font-size: 0.75rem;
+	}
+}
